@@ -3,17 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Auth", "Auth\Auth.csproj", "{B36170CF-9A48-482B-A735-2D0181F69F85}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wond.Auth", "Auth\Wond.Auth.csproj", "{B36170CF-9A48-482B-A735-2D0181F69F85}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Notifications", "Notifications\Notifications.csproj", "{C903D0F0-6A1A-4798-81F9-D6C0FABDB13C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wond.Notifications", "Notifications\Wond.Notifications.csproj", "{C903D0F0-6A1A-4798-81F9-D6C0FABDB13C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Params", "Params\Params.csproj", "{0BDEA2D5-22EC-4532-8725-A3619B1E5606}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wond.Params", "Params\Wond.Params.csproj", "{0BDEA2D5-22EC-4532-8725-A3619B1E5606}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sells", "Sells\Sells.csproj", "{27043E2B-8C0C-41BD-B679-A749ABE5AD3F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wond.Sells", "Sells\Wond.Sells.csproj", "{27043E2B-8C0C-41BD-B679-A749ABE5AD3F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csproj", "{F8A7DB08-B09B-4401-B1E0-75755264F21C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wond.Shared", "Shared\Wond.Shared.csproj", "{F8A7DB08-B09B-4401-B1E0-75755264F21C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stock", "Stock\Stock.csproj", "{E8E034E9-2CED-433F-BEF4-95DEACF8C280}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wond.Stock", "Stock\Wond.Stock.csproj", "{E8E034E9-2CED-433F-BEF4-95DEACF8C280}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gateway", "Gateway", "{83DA6FB3-4386-45C5-8B66-73BBE1B5ED5E}"
 	ProjectSection(SolutionItems) = preProject
