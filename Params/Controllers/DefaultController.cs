@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Wond.Params.Controllers {
@@ -8,7 +9,14 @@ namespace Wond.Params.Controllers {
 
         [HttpGet]
         public IActionResult GetOk() {
-            return Ok("Ok From AuthService");
+            return Ok("Ok From Params Service");
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("test")]
+        public IActionResult TestAuth() {
+            return Ok("Ok From Params Service (Authorized)");
         }
     }
 }

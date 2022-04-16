@@ -19,5 +19,12 @@ namespace Wond.Sells.Controllers {
         public IActionResult TestAuth() {
             return Ok("Ok From Sells Service (Authorized)");
         }
+
+        [HttpGet]
+      
+        [Route("send")]
+        public IActionResult testRabbit() {
+            return Ok("Ok From Sells Service (Authorized)");
+        }
     }
 }
