@@ -10,29 +10,27 @@ services:
       - wond
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.2
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.1.2
     container_name: elasticsearch
     environment: 
-      - node.name=elasticsearch
+      - node.name=es01
       - cluster.name=es-docker-cluster
-      - cluster.initial_master_nodes=elasticsearch
+      - cluster.initial_master_nodes=es01
       - bootstrap.memory_lock=true
-      - xpack.security.enabled=false
-      - "ES_JAVA_OPTS=-Xms2G -Xmx2G"
-      #- "ES_HEAP_SIZE=1g"
+      - "ES_JAVA_OPTS=-Xms512 -Xmx512m"
     ulimits:
       memlock:
         soft: -1
         hard: -1
     volumes:
-      - ./Data/elasticsearch:/usr/share/elasticsearch/data
+      - ./Data:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
     networks:
       - wond
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:7.17.2
+    image: docker.elastic.co/kibana/kibana:8.1.2
     container_name: kibana
     ports: 
       - 5601:5601
