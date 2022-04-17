@@ -16,6 +16,8 @@ ConfigurationManager configuration = builder.Configuration;
 builder.Host.ConfigureSerilog(configuration["ElasticConfig:Uri"], Assembly.GetEntryAssembly()!.GetName().Name ?? "wond-auth");
 
 var conString = configuration.GetConnectionString("AuthDb");
+Console.WriteLine("Mysql Connection String: " + conString);
+
 builder.Services.AddDbContext<AuthDbContext>(options => options.UseMySql(conString, MySqlServerVersion.AutoDetect(conString)));
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
@@ -49,11 +51,8 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseHttpsRedirection();
 }
-
-
-
-app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();

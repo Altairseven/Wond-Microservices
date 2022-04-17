@@ -1,0 +1,18 @@
+# BUILD
+FROM altairseven/wondshared as build-env
+WORKDIR /app
+
+RUN mkdir Params
+COPY  ./*.csproj ./Params/
+RUN dotnet restore Params
+
+COPY ./ ./Params
+RUN dotnet publish Params -c Release -o out
+
+# RUN
+FROM mcr.microsoft.com/dotnet/aspnet
+
+WORKDIR /app
+COPY --from=build-env /app/out .
+
+ENTRYPOINT ["dotnet", "Wond.Params.dll"]

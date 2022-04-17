@@ -22,6 +22,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gateway", "Gateway", "{83DA
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D2B36173-D140-4C50-A4E5-EF6F28D6ED75}"
 	ProjectSection(SolutionItems) = preProject
+		build-images.sh = build-images.sh
 		docker-compose.devel.yaml = docker-compose.devel.yaml
 		docker-compose.yaml = docker-compose.yaml
 	EndProjectSection

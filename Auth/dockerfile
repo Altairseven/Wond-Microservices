@@ -1,0 +1,18 @@
+# BUILD
+FROM altairseven/wondshared as build-env
+WORKDIR /app
+
+RUN mkdir Auth
+COPY  ./*.csproj ./Auth/
+RUN dotnet restore Auth
+
+COPY ./ ./Auth
+RUN dotnet publish Auth -c Release -o out
+
+# RUN
+FROM mcr.microsoft.com/dotnet/aspnet
+
+WORKDIR /app
+COPY --from=build-env /app/out .
+
+ENTRYPOINT ["dotnet", "Wond.Auth.dll"]
