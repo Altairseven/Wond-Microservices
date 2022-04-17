@@ -1,40 +1,57 @@
-﻿using System.Text;
+﻿using Elasticsearch.Net;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Wond.Shared.MessageBus.Models;
+using IConnection = RabbitMQ.Client.IConnection;
 
 namespace Wond.Shared.MessageBus.Client;
 
-public class MessageBusClient : IMessageBusClient {
+public interface IMessageBusClient {
+    IModel? _channel { get; }
+
+    void SendMessage<T>(string Event, T message);
+}
+
+public class MessageBusClient : IDisposable, IMessageBusClient {
 
     private readonly IConfiguration _conf;
     private readonly IConnection? _connection;
+    private readonly ILogger<MessageBusClient> _logger;
 
     public IModel? _channel { get; }
 
-    public MessageBusClient(IConfiguration conf) {
+    public MessageBusClient(IConfiguration conf, ILogger<MessageBusClient> logger) {
         _conf = conf;
-        var factory = new ConnectionFactory() {
-            HostName = _conf["RabbitMQHost"],
-            Port = int.Parse(_conf["RabbitMQPort"]),
+        _logger = logger;
+
+        ConnectionFactory factory = new ConnectionFactory {
+            HostName = _conf["RabbitMQ:Host"],
+            Port = int.Parse(_conf["RabbitMQ:Port"]),
         };
+
         try {
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
-            _channel.ExchangeDeclare(exchange: "trigger", type: ExchangeType.Fanout);
+            _channel.ExchangeDeclare(exchange: "general", type: ExchangeType.Fanout);
 
             _connection.ConnectionShutdown += RabitMQConnectionShutdown;
 
-            Console.WriteLine("--> Connected to Message Bus");
+            _logger.LogInformation("--> Connected to Message Bus");
 
         }
         catch (Exception ex) {
-            Console.WriteLine($"--> could not connecto to the message bus: {ex.Message}");
+            _logger.LogInformation($"--> could not connecto to the message bus: {ex.Message}");
         }
     }
 
-
-    private void Dispose() {
-        Console.WriteLine("--> Connected to Message Bus");
+    void IDisposable.Dispose() {
+        _logger.LogInformation("--> Connected to Message Bus");
         if (_channel != null && _channel.IsOpen) {
             _channel.Close();
             _connection?.Dispose();
@@ -42,25 +59,21 @@ public class MessageBusClient : IMessageBusClient {
         }
     }
 
-
     private void RabitMQConnectionShutdown(object? sender, ShutdownEventArgs e) {
-        Console.WriteLine($"--> Bus Connection Shutdown:");
+        _logger.LogInformation($"--> Bus Connection Shutdown:");
     }
 
-    private void SendMessage(string message) {
-        var body = Encoding.UTF8.GetBytes(message);
+    public void SendMessage<T>(string Event, T message) {
+        var body = new MessageBusPayload<T>(Event, message);
 
-        _channel.BasicPublish(exchange: "trigger", routingKey: "", basicProperties: null, body: body);
-        Console.WriteLine($"--> Message published to the bus ({body})");
+        SendBytesThroughBus(body.ToBytes());
+
+        _logger.LogInformation($"--> Message published to the bus ({message})");
     }
 
-    public void SendPlainText(string message) {
-        if ((_connection != null && _channel != null) && _connection.IsOpen) {
-            Console.WriteLine($"--> RabbitMQ Con Open, Sending Plain Text");
-            SendMessage(message);
-        }
-        else {
-            Console.WriteLine($"--> RabbitMQ Con Closed, Could not send Plain Text");
-        }
+    private void SendBytesThroughBus(Byte[] bytes) {
+        _channel.BasicPublish(exchange: "general", routingKey: "", basicProperties: null, body: bytes);
     }
+
+
 }

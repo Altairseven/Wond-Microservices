@@ -1,23 +1,32 @@
-﻿
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-using Wond.Shared.MessageBus;
+using System.Threading.Tasks;
 
-namespace Wond.Notifications.Subscribers;
+namespace Wond.Shared.MessageBus.Subscriber;
 
 public class MessageBusSubscriber : BackgroundService {
 
     private readonly IConfiguration _conf;
     private readonly IEventProcessor _eventProcesor;
+    private readonly ILogger<MessageBusSubscriber> _logger;
 
     private IConnection? _connection;
     private IModel? _channel;
     private string? _queueName;
 
-    public MessageBusSubscriber(IConfiguration conf, IEventProcessor eventProcesor) {
+    
+
+    public MessageBusSubscriber(IConfiguration conf, IEventProcessor eventProcesor, ILogger<MessageBusSubscriber> logger) {
         _conf = conf;
         _eventProcesor = eventProcesor;
+        _logger = logger;
 
         InitializeRabbitMQ();
     }
@@ -30,16 +39,16 @@ public class MessageBusSubscriber : BackgroundService {
 
         _connection = factory.CreateConnection();
         _channel = _connection.CreateModel();
-        _channel.ExchangeDeclare(exchange: "trigger", type: ExchangeType.Fanout);
+        _channel.ExchangeDeclare(exchange: "general", type: ExchangeType.Fanout);
         _queueName = _channel.QueueDeclare().QueueName;
-        _channel.QueueBind(queue: _queueName, exchange: "trigger", routingKey: "");
+        _channel.QueueBind(queue: _queueName, exchange: "general", routingKey: "");
 
-        Console.WriteLine("--> Listining for events in the Message bus");
+        _logger.LogInformation("Listining for events in the Message bus");
         _connection.ConnectionShutdown += RabbitMQConnectionshudown;
     }
 
     private void RabbitMQConnectionshudown(object? sender, ShutdownEventArgs e) {
-        Console.WriteLine("--> Connection To the Message BUS has shutdown");
+        _logger.LogInformation("Connection To the Message BUS has shutdown");
     }
 
     public override void Dispose() {

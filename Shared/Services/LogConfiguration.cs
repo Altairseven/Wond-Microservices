@@ -17,7 +17,6 @@ public static class LogConfiguration {
 
     public static void ConfigureSerilog(this ConfigureHostBuilder Host, string elasticUri, string assemblyName) {
         
-        Console.WriteLine(elasticUri);
         Host.UseSerilog((context, configuration) => {
             configuration.Enrich.FromLogContext()
                 .Enrich.WithMachineName()

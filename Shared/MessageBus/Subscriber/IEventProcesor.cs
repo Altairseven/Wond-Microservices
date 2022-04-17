@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wond.Shared.MessageBus.Client;
+namespace Wond.Shared.MessageBus.Subscriber;
 
-public interface IMessageBusClient {
-    void SendPlainText(string message);
+public interface IEventProcessor {
+
+    void ProcessEvent(string message);
 }

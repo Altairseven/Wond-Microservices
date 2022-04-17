@@ -1,6 +1,7 @@
 using System.Reflection;
-using Wond.Notifications.Subscribers;
+using Wond.Notifications.BusEvents;
 using Wond.Shared.MessageBus;
+using Wond.Shared.MessageBus.Subscriber;
 using Wond.Shared.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,8 +16,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<IEventProcessor, EventProcessor>();
+
+builder.Services.AddSingleton<IEventProcessor, NotificationsEventProcesor>();
 builder.Services.AddHostedService<MessageBusSubscriber>();
+
 
 #endregion
 
