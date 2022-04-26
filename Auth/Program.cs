@@ -6,9 +6,12 @@ using System.Text;
 using Wond.Auth.Data;
 using System.Reflection;
 using Wond.Shared.Services;
+using Wond.Auth.Services;
+using Wond.Auth.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+string CorsPolicy = "CorsPolicy";
 
 #region services
 ConfigurationManager configuration = builder.Configuration;
@@ -20,7 +23,7 @@ Console.WriteLine("Mysql Connection String: " + conString);
 
 builder.Services.AddDbContext<AuthDbContext>(options => options.UseMySql(conString, MySqlServerVersion.AutoDetect(conString)));
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole<long>>()
     .AddEntityFrameworkStores<AuthDbContext>()
     .AddDefaultTokenProviders();
 
@@ -34,18 +37,37 @@ builder.Services.Configure<IdentityOptions>(options => {
 
 builder.Services.ConfigureJwtAuth(configuration);
 
+builder.Services.AddSingleton<ITokenService, TokenService>();
+
+
+
 builder.Services.AddControllers();
+builder.Services.AddCors(options => {
+    options.AddPolicy(name: CorsPolicy, policy =>
+        policy
+        .WithOrigins("*")
+        .AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .WithExposedHeaders("filename")
+    );
+});
 
 
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+
+
 #endregion
 
 var app = builder.Build();
 
 #region Middleware
+
+app.UseCors(CorsPolicy);
 
 if (app.Environment.IsDevelopment())
 {
@@ -54,12 +76,17 @@ if (app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
+
 app.UseAuthentication();
 app.UseAuthorization();
+
+
+
 
 app.MapControllers();
 
 app.FeedDb(app.Environment.IsProduction());
+
 
 #endregion
 

@@ -20,16 +20,28 @@ namespace Wond.Shared.Services {
             }).AddJwtBearer(options => {
                 options.SaveToken = true;
                 options.RequireHttpsMetadata = false;
-                options.TokenValidationParameters = new TokenValidationParameters() {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidAudience = configuration["JWT:ValidAudience"],
-                    ValidIssuer = configuration["JWT:ValidIssuer"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]))
-                };
+                options.TokenValidationParameters = AppTokenValidationParameters(configuration);
             });
 
         }
 
+        public static TokenValidationParameters AppTokenValidationParameters(IConfiguration configuration) {
+            return new TokenValidationParameters() {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidAudience = configuration["JWT:ValidAudience"],
+                ValidIssuer = configuration["JWT:ValidIssuer"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"])),
+                ValidateLifetime = true,
+                LifetimeValidator = LifetimeValidator
+            };
+        }
+
+        public static bool LifetimeValidator(DateTime? notBefore, DateTime? expires, SecurityToken securityToken, TokenValidationParameters validationParameters) {
+            if (expires != null) {
+                if (DateTime.UtcNow < expires) return true;
+            }
+            return false;
+        }
     }
 }

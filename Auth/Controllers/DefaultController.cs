@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -19,6 +20,13 @@ namespace Wond.Auth.Controllers {
         [HttpGet]
         public IActionResult GetOk() { 
             return Ok("Ok From Auth Service");
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("testauth")]
+        public IActionResult TestAuth() {
+            return Ok("Ok From Auth Service (Authorized)");
         }
 
         [HttpGet]

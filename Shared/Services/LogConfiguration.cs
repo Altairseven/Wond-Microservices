@@ -30,7 +30,8 @@ public static class LogConfiguration {
                       AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv7,
                       NumberOfShards = 2,
                       NumberOfReplicas = 1,
-                      FailureCallback = e => Console.WriteLine("Unable to submit event to ElasticSearch" + e.MessageTemplate),
+                      //FailureCallback = e => Console.WriteLine("Unable to submit event to ElasticSearch" + e.MessageTemplate),
+                      FailureCallback = e => { },
                       EmitEventFailure = EmitEventFailureHandling.WriteToSelfLog |
                                                EmitEventFailureHandling.WriteToFailureSink |
                                                EmitEventFailureHandling.RaiseCallback,

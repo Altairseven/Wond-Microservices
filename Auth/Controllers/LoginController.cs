@@ -7,23 +7,25 @@ using System.Security.Claims;
 using System.Text;
 using Wond.Auth.Dtos;
 using Wond.Auth.Models;
+using Wond.Auth.Services;
 
 namespace Wond.Auth.Controllers {
     [Route("api")]
     [ApiController]
     public class LoginController : ControllerBase {
 
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IConfiguration _configuration;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole<long>> _roleManager;
+        private readonly ITokenService _token;
 
         public LoginController(
-            UserManager<IdentityUser> userManager,
-            RoleManager<IdentityRole> roleManager,
-            IConfiguration configuration) {
+            UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole<long>> roleManager,
+            ITokenService token
+            ) {
             _userManager = userManager;
             _roleManager = roleManager;
-            _configuration = configuration;
+            _token = token;
         }
 
         [HttpPost]
@@ -35,6 +37,7 @@ namespace Wond.Auth.Controllers {
 
                 var authClaims = new List<Claim>
                 {
+                    new Claim(new IdentityOptions().ClaimsIdentity.UserIdClaimType, user.Id.ToString()),
                     new Claim(ClaimTypes.Name, user.UserName),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 };
@@ -43,11 +46,20 @@ namespace Wond.Auth.Controllers {
                     authClaims.Add(new Claim(ClaimTypes.Role, userRole));
                 }
 
-                var token = GetToken(authClaims);
+                var token = _token.GenerateAccessToken(authClaims);
+
+
+                user.RefreshToken = _token.GenerateRefreshToken();
+                user.RefreshTokenExpiration = _token.GetNewRefreshExpiration();
+                await _userManager.UpdateAsync(user);
 
                 return Ok(new {
+                    userId = user.Id,
+                    userName = user.UserName,
                     token = new JwtSecurityTokenHandler().WriteToken(token),
-                    expiration = token.ValidTo
+                    expiration = token.ValidTo,
+                    refreshToken = user.RefreshToken,
+                    refreshExpiration = user.RefreshTokenExpiration
                 });
             }
             return Unauthorized();
@@ -60,18 +72,19 @@ namespace Wond.Auth.Controllers {
             if (userExists != null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
 
-            IdentityUser user = new() {
+            ApplicationUser user = new() {
                 Email = model.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
                 UserName = model.Username
             };
+
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });
 
 
             if (!await _roleManager.RoleExistsAsync(UserRoles.User))
-                await _roleManager.CreateAsync(new IdentityRole(UserRoles.User));
+                await _roleManager.CreateAsync(new IdentityRole<long>(UserRoles.User));
 
             await _userManager.AddToRoleAsync(user, UserRoles.User);
 
@@ -86,19 +99,20 @@ namespace Wond.Auth.Controllers {
             if (userExists != null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
 
-            IdentityUser user = new() {
+            ApplicationUser user = new() {
                 Email = model.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
                 UserName = model.Username
             };
+
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });
 
             if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
-                await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
+                await _roleManager.CreateAsync(new IdentityRole<long>(UserRoles.Admin));
             if (!await _roleManager.RoleExistsAsync(UserRoles.User))
-                await _roleManager.CreateAsync(new IdentityRole(UserRoles.User));
+                await _roleManager.CreateAsync(new IdentityRole<long>(UserRoles.User));
 
             if (await _roleManager.RoleExistsAsync(UserRoles.Admin)) {
                 await _userManager.AddToRoleAsync(user, UserRoles.Admin);
@@ -106,22 +120,43 @@ namespace Wond.Auth.Controllers {
             if (await _roleManager.RoleExistsAsync(UserRoles.Admin)) {
                 await _userManager.AddToRoleAsync(user, UserRoles.User);
             }
-            return Ok(new Response { Status = "Success", Message = "User created successfully!" });
+            return Ok(new Response { Status = "Success", Message = "Admin User created successfully!" });
         }
 
-        private JwtSecurityToken GetToken(List<Claim> authClaims) {
-            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+        [HttpPost]
+        [Route("refresh-token")]
+        public async Task<IActionResult> ObtainRefreshToken(RefreshTokenDto en) {
+            if (en.RefreshToken == null || en.ExpiredToken == null)
+                return BadRequest();
 
-            var token = new JwtSecurityToken(
-                issuer: _configuration["JWT:ValidIssuer"],
-                audience: _configuration["JWT:ValidAudience"],
-                expires: DateTime.Now.AddHours(3),
-                claims: authClaims,
-                signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-                );
+            var principal = _token.GetPrincipalFromExpiredToken(en.ExpiredToken);
+            var userId = principal.Claims.First(x => x.Type == new IdentityOptions().ClaimsIdentity.UserIdClaimType).Value;
+            var userName = principal.Identity!.Name;
 
-            return token;
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null || user.RefreshToken != en.RefreshToken || user.RefreshTokenExpiration <= DateTime.Now) {
+                return BadRequest("Invalid client request");
+            }
+
+            var newAccessToken = _token.GenerateAccessToken(principal.Claims.ToList());
+            var newRefreshToken = _token.GenerateRefreshToken();
+
+            user.RefreshToken = newRefreshToken;
+            user.RefreshTokenExpiration = _token.GetNewRefreshExpiration();
+            await _userManager.UpdateAsync(user);
+
+
+            return Ok(new {
+                userId = user.Id,
+                userName = user.UserName,
+                token = new JwtSecurityTokenHandler().WriteToken(newAccessToken),
+                expiration = newAccessToken.ValidTo,
+                refreshToken = user.RefreshToken,
+                refreshExpiration = user.RefreshTokenExpiration
+            });
         }
+
+        
     }
 }
 
