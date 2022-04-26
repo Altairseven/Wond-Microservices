@@ -1,0 +1,26 @@
+{
+  "name": "wond-admin-vue",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@headlessui/vue": "^1.5.0",
+    "axios": "^0.26.1",
+    "pinia": "^2.0.13",
+    "vue": "^3.2.25",
+    "vue-router": "^4.0.14"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^2.3.1",
+    "autoprefixer": "^10.4.5",
+    "postcss": "^8.4.12",
+    "tailwindcss": "^3.0.24",
+    "typescript": "^4.5.4",
+    "vite": "^2.9.5",
+    "vue-tsc": "^0.34.7"
+  }
+}
