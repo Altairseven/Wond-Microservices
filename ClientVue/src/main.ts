@@ -1,5 +1,15 @@
+
+
 import { createPinia } from 'pinia'
+import { defineConfig } from 'vite'
+
 import { createApp } from 'vue'
+
+
+
+
+console.log(import.meta.env) // remove this after you've confirmed it working
+
 
 
 

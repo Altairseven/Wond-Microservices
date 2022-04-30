@@ -12,5 +12,7 @@ echo "Building Sells Service Image..."
 docker build -t altairseven/wondsells ./Sells || exit
 echo "Building Stock Service Image..."
 docker build -t altairseven/wondstock ./Stock || exit
+echo "Building Web Client"
+docker build -t altairseven/wondclientvue ./ClientVue || exit
 
 echo "All images were built successfuly";

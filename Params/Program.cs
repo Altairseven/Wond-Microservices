@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 #region Services
 ConfigurationManager configuration = builder.Configuration;
 
-builder.Host.ConfigureSerilog(configuration["ElasticConfig:Uri"], Assembly.GetEntryAssembly()!.GetName().Name ?? "wond-params");
+builder.Host.ConfigureSerilog(configuration, Assembly.GetEntryAssembly()!.GetName().Name ?? "wond-params");
 
 builder.Services.ConfigureJwtAuth(configuration);
 

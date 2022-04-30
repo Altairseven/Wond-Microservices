@@ -113,6 +113,14 @@ services:
     networks:
       - public
 
+  wondclient:
+    image: altairseven/wondclientvue
+    container_name: wondclient
+    restart: unless-stopped
+    ports:
+      - 3300:80
+    networks:
+      - public
 
 
 

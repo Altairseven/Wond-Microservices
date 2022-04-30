@@ -1,1 +1,0 @@
-export const AUTH_URL = "http://localhost:5800/api";

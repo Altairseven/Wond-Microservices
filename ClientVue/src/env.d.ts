@@ -6,3 +6,13 @@ declare module '*.vue' {
   const component: DefineComponent<{}, {}, any>
   export default component
 }
+
+
+interface ImportMetaEnv {
+  readonly AUTH_URL: string
+  // more env variables...
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv
+}

@@ -16,7 +16,7 @@ string CorsPolicy = "CorsPolicy";
 #region services
 ConfigurationManager configuration = builder.Configuration;
 
-builder.Host.ConfigureSerilog(configuration["ElasticConfig:Uri"], Assembly.GetEntryAssembly()!.GetName().Name ?? "wond-auth");
+builder.Host.ConfigureSerilog(configuration, Assembly.GetEntryAssembly()!.GetName().Name ?? "wond-auth");
 
 var conString = configuration.GetConnectionString("AuthDb");
 Console.WriteLine("Mysql Connection String: " + conString);
