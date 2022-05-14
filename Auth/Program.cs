@@ -5,7 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Wond.Auth.Data;
 using System.Reflection;
-using Wond.Shared.Services;
+using Wond.Shared.Configuration;
 using Wond.Auth.Services;
 using Wond.Auth.Models;
 

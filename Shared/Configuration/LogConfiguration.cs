@@ -1,18 +1,10 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Serilog.AspNetCore;
-using Serilog.Sinks.File;
-using Serilog.Formatting.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Serilog;
 using Serilog.Sinks.Elasticsearch;
 using System.Diagnostics;
 using Microsoft.Extensions.Configuration;
 
-namespace Wond.Shared.Services;
+namespace Wond.Shared.Configuration;
 
 public static class LogConfiguration {
 

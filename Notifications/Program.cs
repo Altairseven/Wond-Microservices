@@ -2,7 +2,7 @@ using System.Reflection;
 using Wond.Notifications.BusEvents;
 using Wond.Shared.MessageBus;
 using Wond.Shared.MessageBus.Subscriber;
-using Wond.Shared.Services;
+using Wond.Shared.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
 
 builder.Host.ConfigureSerilog(configuration, Assembly.GetEntryAssembly()!.GetName().Name ?? "wond-notifications");
+
+builder.Services.ConfigureDistributedCache(configuration);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

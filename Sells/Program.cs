@@ -3,7 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 using System.Text;
 using Wond.Shared.MessageBus.Client;
-using Wond.Shared.Services;
+using Wond.Shared.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
 
 builder.Host.ConfigureSerilog(configuration, Assembly.GetEntryAssembly()!.GetName().Name ?? "wond-sells");
+
+builder.Services.ConfigureDistributedCache(configuration);
 
 builder.Services.ConfigureJwtAuth(configuration);
 

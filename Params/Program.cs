@@ -1,5 +1,5 @@
 using System.Reflection;
-using Wond.Shared.Services;
+using Wond.Shared.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
 
 builder.Host.ConfigureSerilog(configuration, Assembly.GetEntryAssembly()!.GetName().Name ?? "wond-params");
+
+builder.Services.ConfigureDistributedCache(configuration);
 
 builder.Services.ConfigureJwtAuth(configuration);
 

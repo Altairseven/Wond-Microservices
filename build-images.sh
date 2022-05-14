@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#echo "Building Gateway Image..."
+#docker build -t altairseven/wondgateway ./Gateway || exit
 echo "Building Shared Lib Image..."
 docker build -t altairseven/wondshared ./Shared || exit
 echo "Building Auth Service Image..."
