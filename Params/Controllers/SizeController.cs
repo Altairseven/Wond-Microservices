@@ -22,7 +22,7 @@ public class SizeController : BaseApiController {
 
     [HttpGet("{id}", Name = "GetSizeById")]
     [ActionName("GetSizeById")]
-    public async Task<IActionResult> GetById(int id) {
+    public async Task<IActionResult> GetSizeById(int id) {
         try {
             var en = await _service.GetByIdAsync(id);
             if (en == null)
@@ -38,7 +38,7 @@ public class SizeController : BaseApiController {
     public async Task<IActionResult> Create(SizeDto dto) {
         try {
             var en = await _service.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById),new { en.Id }, en);
+            return CreatedAtAction(nameof(GetSizeById),new { en.Id }, en);
         }
         catch (Exception ex) {
             return BadRequest(ex.Message);

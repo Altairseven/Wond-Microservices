@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Wond.Params.Dtos;
 using Wond.Params.Services;
@@ -9,9 +10,12 @@ namespace Wond.Params.Controllers;
 public class ColorsController : BaseApiController {
 
     private readonly ICrudService<ColorDto> _service;
+    private readonly ILogger<DefaultController> _logger;
 
-    public ColorsController(ICrudService<ColorDto> service) {
+
+    public ColorsController(ICrudService<ColorDto> service, ILogger<DefaultController> logger) {
         _service = service;
+        _logger = logger;
     }
 
     [HttpGet]
@@ -22,7 +26,7 @@ public class ColorsController : BaseApiController {
 
     [HttpGet("{id}", Name = "GetColorById")]
     [ActionName("GetColorById")]
-    public async Task<IActionResult> GetById(int id) {
+    public async Task<IActionResult> GetColorById(int id) {
         try {
             var en = await _service.GetByIdAsync(id);
             if (en == null)
@@ -35,10 +39,14 @@ public class ColorsController : BaseApiController {
     }
 
     [HttpPost]
+    
     public async Task<IActionResult> Create(ColorDto dto) {
         try {
             var en = await _service.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById),new { en.Id }, en);
+
+            _logger.LogInformation("ColorAdded", en.ToJson());
+
+            return CreatedAtAction(nameof(GetColorById),new { en.Id }, en);
         }
         catch (Exception ex) {
             return BadRequest(ex.Message);
@@ -49,6 +57,7 @@ public class ColorsController : BaseApiController {
     public async Task<IActionResult> Update(ColorDto dto) {
         try {
             var en = await _service.UpdateASync(dto);
+            _logger.LogInformation("ColorEdited", en.ToJson());
             return Ok(en);
         }
         catch (Exception ex) {
@@ -60,6 +69,8 @@ public class ColorsController : BaseApiController {
     public async Task<IActionResult> Delete(int id) {
         try {
             await _service.DeleteByIdAsync(id);
+
+            _logger.LogInformation("ColorRemoved", id);
             return Ok();
         }
         catch (Exception ex) {

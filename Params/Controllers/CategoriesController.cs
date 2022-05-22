@@ -22,7 +22,7 @@ public class CategoriesController : BaseApiController {
 
     [HttpGet("{id}", Name = "GetCategoryById")]
     [ActionName("GetByCategoryId")]
-    public async Task<IActionResult> GetById(int id) {
+    public async Task<IActionResult> GetCategoryById(int id) {
         try {
             var en = await _service.GetByIdAsync(id);
             if (en == null)
@@ -38,7 +38,7 @@ public class CategoriesController : BaseApiController {
     public async Task<IActionResult> Create(CategoryDto dto) {
         try {
             var en = await _service.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById),new { en.Id }, en);
+            return CreatedAtAction(nameof(GetCategoryById),new { en.Id }, en);
         }
         catch (Exception ex) {
             return BadRequest(ex.Message);

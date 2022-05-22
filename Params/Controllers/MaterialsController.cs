@@ -22,7 +22,7 @@ public class MaterialsController : BaseApiController {
 
     [HttpGet("{id}", Name = "GetMaterialById")]
     [ActionName("GetMaterialById")]
-    public async Task<IActionResult> GetById(int id) {
+    public async Task<IActionResult> GetMaterialById(int id) {
         try {
             var en = await _service.GetByIdAsync(id);
             if (en == null)
@@ -38,7 +38,7 @@ public class MaterialsController : BaseApiController {
     public async Task<IActionResult> Create(MaterialDto dto) {
         try {
             var en = await _service.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById),new { en.Id }, en);
+            return CreatedAtAction(nameof(GetMaterialById),new { en.Id }, en);
         }
         catch (Exception ex) {
             return BadRequest(ex.Message);

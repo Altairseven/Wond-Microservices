@@ -47,6 +47,11 @@ static_resources:
                 route:
                   prefix_rewrite: "/api"
                   cluster: sells_service
+              - match:
+                  prefix: "/stock"
+                route:
+                  prefix_rewrite: "/api"
+                  cluster: stock_service
 
   clusters:
   - name: auth_service
@@ -92,4 +97,17 @@ static_resources:
             address:
               socket_address:
                 address: wondsells
+                port_value: 80
+  - name: stock_service
+    type: LOGICAL_DNS
+    # Comment out the following line to test on v6 networks
+    dns_lookup_family: V4_ONLY
+    load_assignment:
+      cluster_name: stock_service
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: wondstock
                 port_value: 80
