@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 
 namespace Wond.Auth.Controllers {
-    [Route("api")]
+    [Route("auth")]
     [ApiController]
     public class DefaultController : ControllerBase {
 

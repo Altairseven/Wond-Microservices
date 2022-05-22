@@ -24,6 +24,10 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IMessageBusClient, MessageBusClient>();
 
+builder.Services.ConfigureAutomapper();
+
+
+
 #endregion
 
 var app = builder.Build();

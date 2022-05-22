@@ -1,6 +1,6 @@
 ﻿namespace Wond.Auth.Dtos;
 
-public class Response {
+public class ResponseDto {
     public string? Status { get; set; }
     public string? Message { get; set; }
 }

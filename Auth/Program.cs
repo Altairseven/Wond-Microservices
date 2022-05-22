@@ -38,6 +38,7 @@ builder.Services.Configure<IdentityOptions>(options => {
 builder.Services.ConfigureJwtAuth(configuration);
 
 builder.Services.AddSingleton<ITokenService, TokenService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 
 

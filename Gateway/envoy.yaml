@@ -35,7 +35,7 @@ static_resources:
               - match:
                   prefix: "/auth"
                 route:
-                  prefix_rewrite: "/api"
+                  prefix_rewrite: "/auth"
                   cluster: auth_service
               - match:
                   prefix: "/params"

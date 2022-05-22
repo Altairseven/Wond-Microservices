@@ -8,6 +8,7 @@ namespace Wond.Params.Controllers {
     public class DefaultController : ControllerBase {
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult GetOk() {
             return Ok("Ok From Params Service");
         }
